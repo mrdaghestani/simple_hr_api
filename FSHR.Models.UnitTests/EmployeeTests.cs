@@ -2,7 +2,7 @@ using System;
 using Xunit;
 using FSHR.Models;
 
-namespace FSHR.Models.Tests
+namespace FSHR.Models.UnitTests
 {
     public class EmployeeTests
     {

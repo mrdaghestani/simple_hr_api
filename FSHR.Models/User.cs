@@ -13,5 +13,11 @@ namespace FSHR.Models
         public string Username { get; private set; }
         public Password Password { get; private set; }
         public System.DateTime CreationTime { get; private set; }
+        public int? EmployeeId { get; private set; }
+
+        public void SetEmployee(Employee employee)
+        {
+            EmployeeId = employee.Id;
+        }
     }
 }
