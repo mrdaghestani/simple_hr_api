@@ -1,5 +1,6 @@
 using Xunit;
 using FSHR.Models;
+using System;
 
 namespace FSHR.Models.UnitTests
 {
@@ -8,43 +9,42 @@ namespace FSHR.Models.UnitTests
         [Fact]
         public void Constructor_should_assign_properties_correctly()
         {
-            var instance = new Models.Password("password", "salt");
+            var instance = new Models.Password("pass");
 
-            Assert.Equal("salt", instance.Salt);
-            Assert.Equal("password", instance.Value);
+            Assert.NotEmpty(instance.Salt);
+            Assert.NotEmpty(instance.Hash);
+            Assert.True(instance.HashByteSize > 0);
+            Assert.True(instance.HasingIterationCount > 0);
+            Assert.Equal(DateTime.Now, instance.GenerationTime, TimeSpan.FromMilliseconds(200));
         }
 
         [Fact]
-        public void Equality_should_return_true_for_same_value_and_password_but_different_instance()
+        public void IsMatch_should_return_true_for_same_password()
         {
-            var password = "pass";
-            var salt = "salt";
+            var password = "my-pass-123";
 
-            var instance1 = new Models.Password(password, salt);
-            var instance2 = new Models.Password(password, salt);
+            var instance = new Models.Password(password);
 
-            Assert.StrictEqual(instance1, instance2);
-            Assert.True(instance1 == instance2);
+            Assert.True(instance.IsMatch(password));
         }
 
         [Fact]
-        public void Equality_should_return_false_for_comparing_with_null_instance()
+        public void IsMatch_should_return_false_for_same_password_but_different_case_sesitivity()
         {
-            var instance1 = Helpers.ReadOnlyInstances.Password;
-            var instance2 = (Models.Password)null;
+            var password = "my-pass-123";
 
-            Assert.NotStrictEqual(instance1, instance2);
-            Assert.False(instance1 == instance2);
+            var instance = new Models.Password(password);
+
+            Assert.False(instance.IsMatch("my-Pass-123"));
         }
-
         [Fact]
-        public void Equality_should_return_false_for_comparing_according_to_casesensitivity()
+        public void IsMatch_should_return_false_for_different_password()
         {
-            var instance1 = new Models.Password("password", "salt");
-            var instance2 = new Models.Password("pAssword", "salt");
+            var password = "my-pass-123";
 
-            Assert.NotStrictEqual(instance1, instance2);
-            Assert.False(instance1 == instance2);
+            var instance = new Models.Password(password);
+
+            Assert.False(instance.IsMatch("my-p"));
         }
     }
 }

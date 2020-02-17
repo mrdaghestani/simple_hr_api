@@ -11,9 +11,10 @@ namespace FSHR.Common.UnitTests
             var actualMessageParams = new[] { "val1", "val2" };
             var actualInnerException = new Exception();
 
-            var instance = new Mock.ExceptionBaseMock(1, "msg", actualMessageParams, actualInnerException);
+            var instance = new Mock.ExceptionBaseMock(1, 404, "msg", actualMessageParams, actualInnerException);
 
             Assert.Equal(1, instance.Code);
+            Assert.Equal(404, instance.HttpStatusCode);
             Assert.Equal("msg", instance.Message);
             Assert.Equal(actualMessageParams, instance.MessageParams);
             Assert.Equal(actualInnerException, instance.InnerException);

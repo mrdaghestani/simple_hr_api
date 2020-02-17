@@ -1,35 +1,52 @@
+using System.Security.Cryptography;
+
 namespace FSHR.Models
 {
     public class Password
     {
-        public Password(string value, string salt)
+        private const int DefaultSaltByteSize = 512;
+        private const int DefaultHasingIterationCount = 5;
+        private const int DefaultHashByteSize = 1024;
+        private static byte[] GenerateSalt(int saltByteSize)
         {
-            Value = value;
-            Salt = salt;
+            using (var generator = new RNGCryptoServiceProvider())
+            {
+                var salt = new byte[saltByteSize];
+                generator.GetBytes(salt);
+                return salt;
+            }
+        }
+        internal static byte[] ComputeHash(string password, byte[] salt, int iterations, int hashByteSize)
+        {
+            using (Rfc2898DeriveBytes hashGenerator = new Rfc2898DeriveBytes(password, salt))
+            {
+                hashGenerator.IterationCount = iterations;
+                return hashGenerator.GetBytes(hashByteSize);
+            }
         }
 
-        public string Value { get; private set; }
-        public string Salt { get; private set; }
-
-        public override bool Equals(object obj)
+        public Password(string password)
         {
-            if (obj == null || !(obj is Password)) return false;
-            var castedObj = (Password)obj;
-            return this.Value.Equals(castedObj.Value) && this.Salt.Equals(castedObj.Salt);
+            HasingIterationCount = DefaultHasingIterationCount;
+            HashByteSize = DefaultHashByteSize;
+
+            Salt = GenerateSalt(DefaultSaltByteSize);
+            Hash = ComputeHash(password, Salt, HasingIterationCount, HashByteSize);
+
+            GenerationTime = System.DateTime.Now;
         }
 
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode() * 2 + Salt.GetHashCode() * 3;
-        }
+        public byte[] Hash { get; private set; }
+        public byte[] Salt { get; private set; }
+        public int HasingIterationCount { get; private set; }
+        public int HashByteSize { get; private set; }
+        public System.DateTime GenerationTime { get; private set; }
 
-        public static bool operator ==(Password a, Password b)
+        public bool IsMatch(string password)
         {
-            return a?.Equals(b) ?? false;
-        }
-        public static bool operator !=(Password a, Password b)
-        {
-            return !(a == b);
+            var hash = ComputeHash(password, Salt, HasingIterationCount, HashByteSize);
+
+            return System.Convert.ToBase64String(hash) == System.Convert.ToBase64String(Hash);
         }
     }
 }

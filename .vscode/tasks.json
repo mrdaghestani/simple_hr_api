@@ -41,7 +41,9 @@
             "command": "dotnet",
             "type": "shell",
             "args": [
-                "test"
+                "test",
+                "--",
+                "ASPNETCORE_ENVIRONMENT=Integration"
             ],
             "group": {
                 "kind": "test",
