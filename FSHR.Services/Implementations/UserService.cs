@@ -31,6 +31,13 @@ namespace FSHR.Services.Implementations
 
             await _userRepository.Create(user);
 
+            Hangfire.BackgroundJob.Enqueue<IEmailService>(x => x.Send(new EmailSendDto
+            {
+                Body = $"Your FirstSource Password: {password}",
+                EmailAddress = dto.EmailAddress,
+                Subject = "FirstSource Password"
+            }));
+
             return new UserRegisterResultDto();
         }
     }

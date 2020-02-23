@@ -31,6 +31,7 @@ namespace FSHR.Api
             //registering services
             services.AddScoped<FSHR.Services.IMapper, FSHR.Services.Implementations.Mapper>();
             services.AddScoped<FSHR.Services.IRandomGenerator, FSHR.Services.Implementations.RandomGenerator>();
+            services.AddScoped<FSHR.Services.IEmailService, FSHR.Services.Implementations.EmailService>();
             services.AddScoped<FSHR.Services.IUserService, FSHR.Services.Implementations.UserService>();
 
 
